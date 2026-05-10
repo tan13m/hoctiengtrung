@@ -90,13 +90,23 @@
 <script>
     let currentMode = '', currentNumber = 0, correctAnswerArray = [], userSelection = [], combo = 0, maxCombo = 0, startTime = 0;
 
-    const pinyinData = { 0: "líng", 1: "yī", 2: "èr", 3: "sān", 4: "sì", 5: "wǔ", 6: "liù", 7: "qī", 8: "bā", 9: "jiǔ", "shi": "shí", "bai": "bǎi", "qian": "qiān", "wan": "wàn" };
+    const pinyinData = { 
+        0: "líng", 1: "yī", 2: "èr", 3: "sān", 4: "sì", 5: "wǔ", 
+        6: "liù", 7: "qī", 8: "bā", 9: "jiǔ", 
+        "shi": "shí", "bai": "bǎi", "qian": "qiān", "wan": "wàn" 
+    };
     
-    // Đã bổ sung 'liǎng': 'liang' để hệ thống nhận diện khi bạn nhập text
-    const pinyinNoTone = { "líng": "ling", "yī": "yi", "èr": "er", "sān": "san", "sì": "si", "wǔ": "wu", "liù": "liu", "qī": "qi", "bā": "ba", "jiǔ": "jiu", "shí": "shi", "bǎi": "bai", "qiān": "qian", "wàn": "wan", "liǎng": "liang" };
+    const pinyinNoTone = { 
+        "líng": "ling", "yī": "yi", "èr": "er", "sān": "san", "sì": "si", 
+        "wǔ": "wu", "liù": "liu", "qī": "qi", "bā": "ba", "jiǔ": "jiu", 
+        "shí": "shi", "bǎi": "bai", "qiān": "qian", "wàn": "wan", "liǎng": "liang" 
+    };
+
     const distractors = ["yí", "yì", "ér", "sǎn", "wù", "shì", "bái", "qián", "liǎng"];
 
-    document.getElementById('speedRange').addEventListener('input', (e) => { document.getElementById('speedValue').innerText = e.target.value; });
+    document.getElementById('speedRange').addEventListener('input', (e) => { 
+        document.getElementById('speedValue').innerText = e.target.value; 
+    });
 
     function numberToChinese(num) {
         if (num === 0) return '零';
@@ -110,7 +120,6 @@
                 let pos = section.length - i - 1;
                 if (d === 0) { zero = true; } else {
                     if (zero) { s += digits[0]; zero = false; }
-                    // Xử lý đọc số 2 chuẩn ngữ pháp cho TTS (nếu cần)
                     if (!(pos === 1 && d === 1 && s === '')) { s += digits[d]; }
                     s += units[pos];
                 }
@@ -159,10 +168,16 @@
     function speakCurrentNumber() {
         window.speechSynthesis.cancel();
         let textToSpeak, lang;
-        if (currentMode === 'vn_to_pinyin') { textToSpeak = numberToVietnamese(currentNumber); lang = 'vi-VN'; }
-        else { textToSpeak = numberToChinese(currentNumber); lang = 'zh-CN'; }
+        if (currentMode === 'vn_to_pinyin') { 
+            textToSpeak = numberToVietnamese(currentNumber); 
+            lang = 'vi-VN'; 
+        } else { 
+            textToSpeak = numberToChinese(currentNumber); 
+            lang = 'zh-CN'; 
+        }
         const msg = new SpeechSynthesisUtterance(textToSpeak);
-        msg.lang = lang; msg.rate = parseFloat(document.getElementById('speedRange').value);
+        msg.lang = lang; 
+        msg.rate = parseFloat(document.getElementById('speedRange').value);
         window.speechSynthesis.speak(msg);
         if(startTime === 0) startTime = Date.now();
     }
@@ -176,12 +191,22 @@
         document.getElementById('listenLv1Area').style.display = 'none';
         document.getElementById('listenLv2Area').style.display = 'none';
         document.getElementById('vnPinyinArea').style.display = 'none';
-        if(mode === 'write') { document.getElementById('writeMode').style.display = 'block'; document.getElementById('modeTitle').innerText = "Ghép Pinyin"; }
-        else {
+        
+        if(mode === 'write') { 
+            document.getElementById('writeMode').style.display = 'block'; 
+            document.getElementById('modeTitle').innerText = "Ghép Pinyin"; 
+        } else {
             document.getElementById('listenMode').style.display = 'block';
-            if(mode === 'listen') { document.getElementById('listenLv1Area').style.display = 'block'; document.getElementById('modeTitle').innerText = "Nghe Lv1 (Trắc nghiệm)"; }
-            else if(mode === 'listen2') { document.getElementById('listenLv2Area').style.display = 'block'; document.getElementById('modeTitle').innerText = "Nghe Lv2 (Tự điền)"; }
-            else if(mode === 'vn_to_pinyin') { document.getElementById('vnPinyinArea').style.display = 'block'; document.getElementById('modeTitle').innerText = "Nghe Tiền Việt -> Ghi Pinyin"; }
+            if(mode === 'listen') { 
+                document.getElementById('listenLv1Area').style.display = 'block'; 
+                document.getElementById('modeTitle').innerText = "Nghe Lv1 (Trắc nghiệm)"; 
+            } else if(mode === 'listen2') { 
+                document.getElementById('listenLv2Area').style.display = 'block'; 
+                document.getElementById('modeTitle').innerText = "Nghe Lv2 (Tự điền)"; 
+            } else if(mode === 'vn_to_pinyin') { 
+                document.getElementById('vnPinyinArea').style.display = 'block'; 
+                document.getElementById('modeTitle').innerText = "Nghe Tiền Việt -> Ghi Pinyin"; 
+            }
         }
         generateTask();
     }
@@ -192,50 +217,64 @@
         userSelection = []; startTime = 0;
         document.getElementById("result").innerText = "";
         let actionBtn = document.getElementById("actionBtn");
-        actionBtn.innerText = "Kiểm tra"; actionBtn.onclick = checkAnswer;
+        actionBtn.innerText = "Kiểm tra"; 
+        actionBtn.onclick = checkAnswer;
+
         if (currentMode === 'write') {
             document.getElementById("randomNumber").innerText = currentNumber.toLocaleString();
             document.getElementById("answerArea").innerHTML = "";
             renderOptions();
         } else if (currentMode === 'listen') {
-            renderListenOptions(); setTimeout(speakCurrentNumber, 600);
+            renderListenOptions(); 
+            setTimeout(speakCurrentNumber, 600);
         } else if (currentMode === 'listen2') {
-            document.getElementById('inputLv2').value = ""; setTimeout(speakCurrentNumber, 600);
+            document.getElementById('inputLv2').value = ""; 
+            setTimeout(speakCurrentNumber, 600);
         } else if (currentMode === 'vn_to_pinyin') {
             document.getElementById('vnNumberShow').innerText = currentNumber.toLocaleString();
             document.getElementById('vnTextShow').innerText = numberToVietnamese(currentNumber).toUpperCase();
-            document.getElementById('inputVnPinyin').value = ""; setTimeout(speakCurrentNumber, 600);
+            document.getElementById('inputVnPinyin').value = ""; 
+            setTimeout(speakCurrentNumber, 600);
         }
     }
 
     function renderOptions() {
-        const grid = document.getElementById("optionsGrid"); grid.innerHTML = "";
+        const grid = document.getElementById("optionsGrid"); 
+        grid.innerHTML = "";
         let pool = [...new Set([...correctAnswerArray, ...distractors])].sort(() => Math.random() - 0.5);
         pool.forEach(word => {
-            const btn = document.createElement("button"); btn.className = "opt-btn"; btn.innerText = word;
+            const btn = document.createElement("button"); 
+            btn.className = "opt-btn"; 
+            btn.innerText = word;
             btn.onclick = () => { userSelection.push(word); renderUserSelection(); };
             grid.appendChild(btn);
         });
     }
 
     function renderUserSelection() {
-        const area = document.getElementById("answerArea"); area.innerHTML = "";
+        const area = document.getElementById("answerArea"); 
+        area.innerHTML = "";
         userSelection.forEach((word, index) => {
-            const span = document.createElement("span"); span.className = "token"; span.innerText = word;
+            const span = document.createElement("span"); 
+            span.className = "token"; 
+            span.innerText = word;
             span.onclick = () => { userSelection.splice(index, 1); renderUserSelection(); };
             area.appendChild(span);
         });
     }
 
     function renderListenOptions() {
-        const grid = document.getElementById("listenOptions"); grid.innerHTML = "";
+        const grid = document.getElementById("listenOptions"); 
+        grid.innerHTML = "";
         let choices = [currentNumber];
         while(choices.length < 4) {
             let fake = currentNumber + (Math.floor(Math.random() * 21) - 10) * (Math.pow(10, Math.floor(Math.random() * 2)));
             if (fake > 0 && !choices.includes(fake)) choices.push(fake);
         }
         choices.sort(() => Math.random() - 0.5).forEach(num => {
-            const btn = document.createElement("button"); btn.className = "num-btn"; btn.innerText = num.toLocaleString();
+            const btn = document.createElement("button"); 
+            btn.className = "num-btn"; 
+            btn.innerText = num.toLocaleString();
             btn.onclick = () => { userSelection = [num]; checkAnswer(); };
             grid.appendChild(btn);
         });
@@ -243,10 +282,13 @@
 
     function checkAnswer() {
         let isCorrect = false;
-        if (currentMode === 'write') isCorrect = userSelection.join(" ") === correctAnswerArray.join(" ");
-        else if (currentMode === 'listen') isCorrect = parseInt(userSelection[0]) === currentNumber;
-        else if (currentMode === 'listen2') isCorrect = parseInt(document.getElementById('inputLv2').value.replace(/\D/g, '')) === currentNumber;
-        else if (currentMode === 'vn_to_pinyin') {
+        if (currentMode === 'write') {
+            isCorrect = userSelection.join(" ") === correctAnswerArray.join(" ");
+        } else if (currentMode === 'listen') {
+            isCorrect = parseInt(userSelection[0]) === currentNumber;
+        } else if (currentMode === 'listen2') {
+            isCorrect = parseInt(document.getElementById('inputLv2').value.replace(/\D/g, '')) === currentNumber;
+        } else if (currentMode === 'vn_to_pinyin') {
             let input = document.getElementById('inputVnPinyin').value.toLowerCase().replace(/\s+/g, '');
             let target = correctAnswerArray.map(w => pinyinNoTone[w] || w).join("");
             isCorrect = input === target;
@@ -254,7 +296,8 @@
 
         const resDiv = document.getElementById("result");
         if (isCorrect) {
-            combo++; if (combo > maxCombo) maxCombo = combo;
+            combo++; 
+            if (combo > maxCombo) maxCombo = combo;
             resDiv.innerHTML = `<span class="correct">Chính xác! 🔥 Combo x${combo}</span>`;
         } else {
             combo = 0;
@@ -267,30 +310,21 @@
         document.getElementById("actionBtn").onclick = generateTask;
     }
 
-    function goMenu() { document.getElementById('menu').style.display = 'block'; document.getElementById('gameArea').style.display = 'none'; window.speechSynthesis.cancel(); }
-    function clearAnswer() { userSelection = []; if (currentMode === 'write') renderUserSelection(); else { document.getElementById('inputVnPinyin').value = ""; document.getElementById('inputLv2').value = ""; } }
-
-    // HÀM ĐÃ SỬA: Xử lý liǎng cho hàng VẠN
-    function numberToPinyinArray(num) {
-        if (num === 0) return [pinyinData[0]];
-        let res = [];
-        let wan = Math.floor(num / 10000);
-        let remainder = num % 10000;
-
-        if (wan > 0) {
-            let wanPinyin = (wan === 2) ? ["liǎng"] : helper(wan);
-            res = wanPinyin; 
-            res.push(pinyinData["wan"]);
-        }
-
-        if (remainder > 0) {
-            if (wan > 0 && remainder < 1000) res.push(pinyinData[0]);
-            res = res.concat(helper(remainder));
-        }
-        return res;
+    function goMenu() { 
+        document.getElementById('menu').style.display = 'block'; 
+        document.getElementById('gameArea').style.display = 'none'; 
+        window.speechSynthesis.cancel(); 
     }
 
-    // HÀM ĐÃ SỬA: Xử lý liǎng cho hàng NGHÌN và hàng TRĂM
+    function clearAnswer() { 
+        userSelection = []; 
+        if (currentMode === 'write') renderUserSelection(); 
+        else { 
+            document.getElementById('inputVnPinyin').value = ""; 
+            document.getElementById('inputLv2').value = ""; 
+        } 
+    }
+
     function helper(n) {
         let res = [];
         let q = Math.floor(n / 1000), 
@@ -308,8 +342,9 @@
             if (b === 2) res.push("liǎng");
             else res.push(pinyinData[b]);
             res.push(pinyinData["bai"]);
-        } 
-        else if (q > 0 && (s > 0 || d > 0)) res.push(pinyinData[0]);
+        } else if (q > 0 && (s > 0 || d > 0)) {
+            res.push(pinyinData[0]);
+        }
 
         if (s > 0) {
             if (s === 1 && res.length === 0) {
@@ -318,12 +353,30 @@
                 res.push(pinyinData[s]);
                 res.push(pinyinData["shi"]);
             }
-        } 
-        else if (res.length > 0 && d > 0 && res[res.length-1] !== pinyinData[0]) {
+        } else if (res.length > 0 && d > 0 && res[res.length-1] !== pinyinData[0]) {
             res.push(pinyinData[0]);
         }
 
         if (d > 0) res.push(pinyinData[d]);
+        return res;
+    }
+
+    function numberToPinyinArray(num) {
+        if (num === 0) return [pinyinData[0]];
+        let res = [];
+        let wan = Math.floor(num / 10000);
+        let remainder = num % 10000;
+
+        if (wan > 0) {
+            let wanPinyin = (wan === 2) ? ["liǎng"] : helper(wan);
+            res = wanPinyin; 
+            res.push(pinyinData["wan"]);
+        }
+
+        if (remainder > 0) {
+            if (wan > 0 && remainder < 1000) res.push(pinyinData[0]);
+            res = res.concat(helper(remainder));
+        }
         return res;
     }
 </script>
